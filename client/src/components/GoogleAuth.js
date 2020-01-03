@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { signIn, signOut } from '../actions';
 
 class GoogleAuth extends Component {
-    state = { isSignedIn: null }
 
     componentDidMount(){
         window.gapi.load('client:auth2', () => {
@@ -18,8 +19,12 @@ class GoogleAuth extends Component {
     }
 
     // this listens for change of a users signIn/signOut
-    onAuthChange = () => {
-        this.setState({ isSignedIn: this.auth.isSignedIn.get() })
+    onAuthChange = (isSignedIn) => {
+        if (isSignedIn){
+            this.props.signIn()
+        } else {
+            this.props.signOut()
+        }
     }
 
     // Helper method signs in a user with Google
@@ -62,4 +67,8 @@ class GoogleAuth extends Component {
     }
 }
 
-export default GoogleAuth;
+const mapStateToProps = state => {
+    return { isSignedIn: state.auth.isSignedIn }
+}
+
+export default connect(mapStateToProps, { signIn, signOut })(GoogleAuth);
